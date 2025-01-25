@@ -22,6 +22,7 @@ defmodule QuantumOfSolace.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
+      {:csv, "3.2.2"},
       {:ecto_sql, "3.12.1"},
       {:postgrex, "0.19.3"},
       {:quantum, "3.5.3"},
