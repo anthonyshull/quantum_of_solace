@@ -22,12 +22,10 @@ defmodule QuantumOfSolace.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:ayesql, "1.1.3"},
       {:ecto_sql, "3.12.1"},
-      {:exconstructor, "1.2.13"},
       {:postgrex, "0.19.3"},
       {:quantum, "3.5.3"},
-      {:typed_struct, "0.3.0"}
+      {:typed_ecto_schema, "0.4.1"}
     ]
   end
 end
