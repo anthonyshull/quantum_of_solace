@@ -8,8 +8,8 @@ defmodule QuantumOfSolace.Gtfs do
   @process __MODULE__
            |> Atom.to_string()
            |> String.split(".")
-           |> Kernel.then(fn [_, tail] -> tail end)
-           |> List.join(".")
+           |> Kernel.then(fn [_ | tail] -> tail end)
+           |> Enum.join(".")
 
   def process(source, url) do
     dir = System.tmp_dir!()

@@ -2,9 +2,11 @@ import Config
 
 config :quantum_of_solace, QuantumOfSolace.Repo,
   database: "postgres",
-  username: "postgres",
+  hostname: "localhost",
   password: "postgres",
-  hostname: "localhost"
+  username: "postgres"
+
+config :quantum_of_solace, ecto_repos: [QuantumOfSolace.Repo]
 
 gtfs_jobs =
   Enum.map(
