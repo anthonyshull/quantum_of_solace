@@ -1,6 +1,6 @@
 import Ecto.Query, only: [from: 2]
 
-alias QuantumOfSolace.{Repo, Stops.Stop}
+alias QuantumOfSolace.{Models.Stop, Repo}
 
 Repo.delete_all(Stop)
 
@@ -13,4 +13,4 @@ stops =
   end)
   |> Enum.to_list()
 
-Repo.insert_all(Stop, stops)
+# Repo.insert_all(Stop, stops)

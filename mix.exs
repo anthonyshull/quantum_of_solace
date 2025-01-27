@@ -24,6 +24,7 @@ defmodule QuantumOfSolace.MixProject do
     [
       {:csv, "3.2.2"},
       {:ecto_sql, "3.12.1"},
+      {:gen_stage, "1.2.1"},
       {:postgrex, "0.19.3"},
       {:quantum, "3.5.3"},
       {:typed_ecto_schema, "0.4.1"}
