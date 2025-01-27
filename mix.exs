@@ -27,6 +27,7 @@ defmodule QuantumOfSolace.MixProject do
       {:gen_stage, "1.2.1"},
       {:postgrex, "0.19.3"},
       {:quantum, "3.5.3"},
+      {:timex, "3.7.11"},
       {:typed_ecto_schema, "0.4.1"}
     ]
   end

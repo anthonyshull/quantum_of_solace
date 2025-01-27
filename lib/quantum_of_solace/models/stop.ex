@@ -9,18 +9,18 @@ defmodule QuantumOfSolace.Models.Stop do
   @required_fields [:id, :latitude, :longitude, :name]
 
   typed_schema "stops" do
-    field(:id, :string, enforce: true, primary_key: true)
+    field(:id, :string, primary_key: true)
 
-    field(:latitude, :float, enforce: true, null: false)
-    field(:longitude, :float, enforce: true, null: false)
-    field(:name, :string, enforce: true, null: false)
+    field(:latitude, :float)
+    field(:longitude, :float)
+    field(:name, :string)
 
     belongs_to(:parent, __MODULE__, foreign_key: :parent_id, references: :id, type: :string)
     has_many(:children, __MODULE__, foreign_key: :parent_id, references: :id)
   end
 
-  def new(attrs) do
-    %__MODULE__{}
+  def changeset(stop, attrs) do
+    stop
     |> cast(attrs, all_fields())
     |> validate_required(required_fields())
   end
