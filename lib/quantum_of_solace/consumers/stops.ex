@@ -27,13 +27,8 @@ defmodule QuantumOfSolace.Consumers.Stops do
     |> Stream.filter(fn map ->
       Stop.changeset(%Stop{}, map).valid?
     end)
-    |> Stream.chunk_every(100)
-    |> Task.async_stream(&insert_batch/1, max_concurrency: 10, ordered: false)
-    |> Stream.run()
-  end
-
-  defp insert_batch(data) do
-    Repo.insert_all(Stop, data, on_conflict: :replace_all, conflict_target: [:id])
+    |> Enum.to_list()
+    |> Kernel.then(&Repo.insert_all(Stop, &1, on_conflict: :replace_all, conflict_target: [:id]))
   end
 
   defp map_to_data(data) do
@@ -66,5 +61,9 @@ defmodule QuantumOfSolace.Consumers.Stops do
     |> :os.cmd()
 
     path
+  end
+
+  defp split_stops_file() do
+
   end
 end
