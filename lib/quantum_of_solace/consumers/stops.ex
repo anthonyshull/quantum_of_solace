@@ -62,8 +62,4 @@ defmodule QuantumOfSolace.Consumers.Stops do
 
     path
   end
-
-  defp split_stops_file() do
-
-  end
 end
