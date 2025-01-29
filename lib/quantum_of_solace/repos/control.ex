@@ -7,15 +7,17 @@ defmodule QuantumOfSolace.Repos.Control do
   }
 
   def get_active_repo() do
+    default_repo = Map.get(@repos, :blue)
+
     case query("SELECT canaries.to FROM canaries ORDER BY datetime DESC LIMIT 1") do
       {:ok, %Postgrex.Result{num_rows: 0}} ->
-        Application.get_env(:quantum_of_solace, :active_repo, Map.get(@repos, :blue))
+        Application.get_env(:quantum_of_solace, :active_repo, default_repo)
 
       {:ok, %Postgrex.Result{} = result} ->
         result_to_repo(result)
 
       _ ->
-        Application.get_env(:quantum_of_solace, :active_repo, Map.get(@repos, :blue))
+        Application.get_env(:quantum_of_solace, :active_repo, default_repo)
     end
   end
 
@@ -40,7 +42,7 @@ defmodule QuantumOfSolace.Repos.Control do
 
   def set_active_repo(repo) do
     case query(
-           "INSERT INTO canaries (\"from\", \"to\") VALUES ('#{get_active_repo()}', '#{repo_to_atom(repo)}')"
+           "INSERT INTO canaries (\"from\", \"to\") VALUES ('#{get_active_repo()}', '#{repo}')"
          ) do
       {:ok, _} -> set_active_repo()
       _ -> :error
@@ -49,15 +51,6 @@ defmodule QuantumOfSolace.Repos.Control do
 
   def switch_active_repo() do
     get_passive_repo() |> set_active_repo()
-  end
-
-  defp repo_to_atom(repo) do
-    repo
-    |> Atom.to_string()
-    |> String.split(".")
-    |> List.last()
-    |> String.downcase()
-    |> String.to_atom()
   end
 
   defp result_to_datetime(result) do
@@ -74,6 +67,5 @@ defmodule QuantumOfSolace.Repos.Control do
     |> List.first()
     |> List.first()
     |> String.to_atom()
-    |> Kernel.then(&Map.get(@repos, &1))
   end
 end

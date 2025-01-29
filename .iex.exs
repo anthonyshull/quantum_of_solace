@@ -6,4 +6,6 @@ end
 
 import Helpers
 
+alias QuantumOfSolace.Models.Stop
+alias QuantumOfSolace.Repo
 alias QuantumOfSolace.Repos.Control
