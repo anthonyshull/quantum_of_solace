@@ -3,13 +3,14 @@ defmodule QuantumOfSolace.Consumers.Stops do
 
   use QuantumOfSolace.Consumer
 
-  alias QuantumOfSolace.{Models.Stop, Repo}
+  alias QuantumOfSolace.Models.Stop
+  alias QuantumOfSolace.Repo
 
   @impl GenServer
   def handle_cast({:process, source, path}, _) do
     Logger.info("#{@process} processing stops data from #{source} at #{path}")
 
-    import_stops(path) |> IO.inspect(label: "IMPORT")
+    import_stops(path)
 
     GenServer.cast(QuantumOfSolace.Consumers.Gtfs, {:complete})
 
@@ -18,6 +19,7 @@ defmodule QuantumOfSolace.Consumers.Stops do
 
   defp import_stops(path) do
     (path <> "stops.txt")
+    |> IO.inspect(label: "PATH")
     |> sort_stops_by_parent_id()
     |> File.stream!()
     |> CSV.decode!(headers: true)
@@ -28,7 +30,9 @@ defmodule QuantumOfSolace.Consumers.Stops do
       Stop.changeset(%Stop{}, map).valid?
     end)
     |> Enum.to_list()
-    |> Kernel.then(&Repo.insert_all(Stop, &1, on_conflict: :replace_all, conflict_target: [:id]))
+    |> Kernel.then(
+      &Repo.passive().insert_all(Stop, &1, on_conflict: :replace_all, conflict_target: [:id])
+    )
   end
 
   defp map_to_data(data) do
@@ -37,7 +41,7 @@ defmodule QuantumOfSolace.Consumers.Stops do
       latitude: data.latitude |> String.to_float(),
       longitude: data.longitude |> String.to_float(),
       name: data.name,
-      parent_id: (if data.parent_id == "", do: nil, else: data.parent_id)
+      parent_id: if(data.parent_id == "", do: nil, else: data.parent_id)
     }
   end
 

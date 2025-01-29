@@ -3,6 +3,8 @@ defmodule QuantumOfSolace.Consumers.Gtfs do
 
   use QuantumOfSolace.Consumer
 
+  alias QuantumOfSolace.Repos.Control
+
   @impl GenServer
   def handle_cast({:process, source, url}, _) do
     Logger.info("#{@process}: processing GTFS data from #{source} at #{url}.")
@@ -22,7 +24,9 @@ defmodule QuantumOfSolace.Consumers.Gtfs do
   end
 
   def handle_cast({:complete}, _) do
-    Logger.info("#{@process}: complete.")
+    Logger.info("#{@process} complete. Switching active repo to #{Control.get_passive_repo()}.")
+
+    Control.switch_active_repo()
 
     {:noreply, nil}
   end
@@ -34,7 +38,7 @@ defmodule QuantumOfSolace.Consumers.Gtfs do
 
     with {:ok, :saved_to_file} <-
            :httpc.request(:get, {String.to_charlist(url), []}, [], stream: path),
-         {:ok, _files} <- :zip.unzip(path, [{:cwd, dir}]) do
+         {:ok, _files} <- :zip.unzip(path, [{:cwd, String.to_charlist(dir)}]) do
       dir
     else
       {:error, reason} ->

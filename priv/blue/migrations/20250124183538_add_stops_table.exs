@@ -1,7 +1,7 @@
-defmodule QuantumOfSolace.Repo.Migrations.AddStopsTable do
+defmodule QuantumOfSolace.Repos.Migrations.AddStopsTable do
   use Ecto.Migration
 
-  def change do
+  def up do
     create table("stops", primary_key: false) do
       add(:id, :string, primary_key: true)
 
@@ -18,5 +18,9 @@ defmodule QuantumOfSolace.Repo.Migrations.AddStopsTable do
     REFERENCES stops(id)
     ON DELETE CASCADE;
     """)
+  end
+
+  def down do
+    drop table("stops")
   end
 end

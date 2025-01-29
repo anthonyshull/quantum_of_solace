@@ -8,7 +8,9 @@ defmodule QuantumOfSolace.Application do
     children = [
       {QuantumOfSolace.Consumers.Gtfs, []},
       {QuantumOfSolace.Consumers.Stops, []},
-      {QuantumOfSolace.Repo, []},
+      {QuantumOfSolace.Repos.Control, []},
+      {QuantumOfSolace.Repos.Blue, []},
+      {QuantumOfSolace.Repos.Green, []},
       {QuantumOfSolace.Scheduler, []}
     ]
 
