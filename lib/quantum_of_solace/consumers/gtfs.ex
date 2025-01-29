@@ -36,6 +36,8 @@ defmodule QuantumOfSolace.Consumers.Gtfs do
     file = Atom.to_string(source) <> ".zip"
     path = dir |> Path.join(file) |> String.to_charlist()
 
+    "rm #{Path.join(dir, "*")}" |> String.to_charlist() |> :os.cmd()
+
     with {:ok, :saved_to_file} <-
            :httpc.request(:get, {String.to_charlist(url), []}, [], stream: path),
          {:ok, _files} <- :zip.unzip(path, [{:cwd, String.to_charlist(dir)}]) do
