@@ -18,8 +18,8 @@ defmodule QuantumOfSolace.Consumers.Stops do
   end
 
   defp import_stops(path) do
-    (path <> "stops.txt")
-    |> IO.inspect(label: "PATH")
+    path
+    |> Path.join("stops.txt")
     |> sort_stops_by_parent_id()
     |> File.stream!()
     |> CSV.decode!(headers: true)

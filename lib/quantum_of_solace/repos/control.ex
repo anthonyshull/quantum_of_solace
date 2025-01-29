@@ -25,6 +25,15 @@ defmodule QuantumOfSolace.Repos.Control do
     |> Enum.find(&(&1 != get_active_repo()))
   end
 
+  def last_modified() do
+    query("SELECT datetime FROM canaries ORDER BY datetime DESC LIMIT 1")
+    |> case do
+      {:ok, %Postgrex.Result{num_rows: 0}} -> Timex.now() |> Timex.shift(years: -1)
+      {:ok, %Postgrex.Result{} = result} -> result |> result_to_datetime()
+      _ -> Timex.now() |> Timex.shift(years: -1)
+    end
+  end
+
   def set_active_repo() do
     Application.put_env(:quantum_of_solace, :active_repo, get_active_repo())
   end
@@ -49,6 +58,14 @@ defmodule QuantumOfSolace.Repos.Control do
     |> List.last()
     |> String.downcase()
     |> String.to_atom()
+  end
+
+  defp result_to_datetime(result) do
+    result
+    |> Map.get(:rows)
+    |> List.first()
+    |> List.first()
+    |> Timex.to_datetime("America/New_York")
   end
 
   defp result_to_repo(result) do
