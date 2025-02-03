@@ -1,49 +1,41 @@
 defmodule QuantumOfSolace.Consumers.Gtfs do
   @moduledoc false
 
-  use QuantumOfSolace.Consumer
+  use GenServer
+
+  require Logger
 
   alias QuantumOfSolace.Repos.Control
 
-  @urls %{
-    massport: "https://data.trilliumtransit.com/gtfs/massport-ma-us/massport-ma-us.zip",
-    mbta: "https://cdn.mbta.com/MBTA_GTFS.zip"
-  }
+  @consumers [
+    QuantumOfSolace.Consumers.Models.Zones,
+    QuantumOfSolace.Consumers.Models.Stations,
+    QuantumOfSolace.Consumers.Models.Platforms,
+    QuantumOfSolace.Consumers.Models.Stops
+  ]
+
+  def start_link(_) do
+    GenServer.start_link(__MODULE__, nil, name: __MODULE__)
+  end
+
+  @impl GenServer
+  def init(_) do
+    {:ok, nil}
+  end
 
   @impl GenServer
   def handle_cast({:run}, _) do
-    sources = Enum.map(@urls, fn {source, _} -> source end)
-
-    Logger.info("#{@process} processing GTFS data from #{Enum.join(sources, " and ")}")
-
-    # Get the last-modified from the URL
-    last_modified = @urls |> Map.values() |> get_last_modified()
-
-    # Get the last-modified from the database
-    if Timex.before?(Control.last_modified(), last_modified) do
-      @urls
-      |> Enum.each(fn {source, url} ->
-        path = download_gtfs_files(source, url)
-
-        GenServer.cast(QuantumOfSolace.Consumers.Stops, {:process, source, path})
-      end)
-    else
-      Logger.info("#{@process} no new GTFS data to process.")
-    end
-
-    {:noreply, Kernel.length(sources)}
+    # check the last modified date of the GTFS files agains the consumer runs table
+    # if the GTFS files have been updated since the last run, download the new files
+    # start a timeout clock that will halt the process if we don't complete in time
+    # tell the first consumer to process the new files
+    {:noreply, nil}
   end
 
-  def handle_cast({:complete}, count) do
-    new_count = count - 1
-
-    Logger.info("#{@process} source #{count} complete.")
-
-    if new_count == 0 do
-      Control.switch_active_repo()
-    end
-
-    {:noreply, new_count}
+  def handle_cast({:complete, _consumer}) do
+    # if this is the last consumer, we switch the active database
+    # if there are more consumers, we tell the next consumer to process the new files
+    {:noreply, nil}
   end
 
   defp download_gtfs_files(source, url) do
@@ -63,7 +55,7 @@ defmodule QuantumOfSolace.Consumers.Gtfs do
       dir
     else
       {:error, reason} ->
-        Logger.error("#{@process} failed to download GTFS data from #{source} because #{reason}")
+        Logger.error("#{__MODULE__} failed to download GTFS data from #{source} because #{reason}")
 
         nil
     end

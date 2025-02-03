@@ -1,21 +1,24 @@
-defmodule QuantumOfSolace.Models.Stop do
+defmodule QuantumOfSolace.Models.Platform do
   @moduledoc false
 
   use TypedEctoSchema
 
   import Ecto.Changeset
 
+  alias QuantumOfSolace.Models.Station
+
   @primary_key false
   @required_fields [:agency, :id, :latitude, :longitude, :name]
 
-  typed_schema "stops" do
+  typed_schema "platforms" do
     field(:agency, :string, primary_key: true)
     field(:id, :string, primary_key: true)
 
     field(:latitude, :float)
     field(:longitude, :float)
     field(:name, :string)
-    field(:wheelchair_boarding, :boolean)
+
+    belongs_to(:station, Station, foreign_key: :parent_id, references: :id, type: :string)
   end
 
   def changeset(stop, attrs) do

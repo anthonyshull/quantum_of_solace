@@ -1,8 +1,8 @@
-defmodule QuantumOfSolace.Repos.Migrations.AddStopsTable do
+defmodule QuantumOfSolace.Repos.Migrations.AddStationsTable do
   use Ecto.Migration
 
   def up do
-    create table("stops", primary_key: false) do
+    create table("stations", primary_key: false) do
       add(:agency, :string, primary_key: true)
       add(:id, :string, primary_key: true)
 
@@ -10,10 +10,12 @@ defmodule QuantumOfSolace.Repos.Migrations.AddStopsTable do
       add(:longitude, :float)
       add(:name, :string)
       add(:wheelchair_boarding, :boolean)
+
+      add(:zone_id, references(:zones, type: :string, with: [agency: :agency]))
     end
   end
 
   def down do
-    drop table("stops")
+    drop table("stations")
   end
 end

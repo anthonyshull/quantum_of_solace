@@ -26,5 +26,5 @@ config :quantum_of_solace,
   ]
 
 config :quantum_of_solace, QuantumOfSolace.Scheduler, jobs: [
-  {"@daily", {GenServer, :cast, [QuantumOfSolace.Consumers.Gtfs, {:run}]}},
+  {"* * * * *", {GenServer, :cast, [QuantumOfSolace.Consumers.Gtfs, {:run}]}},
 ]
