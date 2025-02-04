@@ -10,9 +10,11 @@ defmodule QuantumOfSolace.Models.Zone do
   @primary_key false
   @required_fields [:agency, :id]
 
-  typed_schema "stations" do
+  typed_schema "zones" do
     field(:agency, :string, primary_key: true)
     field(:id, :string, primary_key: true)
+
+    field(:updated_at, :utc_datetime)
 
     has_many(:stations, Station, foreign_key: :zone_id, references: :id)
   end

@@ -4,10 +4,7 @@ defmodule QuantumOfSolace.Repo.Migrations.AddConsumerRunsTable do
   def change do
     create table("consumer_runs") do
       add(:agency, :string)
-
-      add(:start, :utc_datetime)
-      add(:stop, :utc_datetime)
-
+      add(:datetime, :utc_datetime, default: fragment("NOW()"))
       add(:success, :boolean)
     end
   end

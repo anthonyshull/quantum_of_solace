@@ -7,7 +7,12 @@ defmodule QuantumOfSolace.Application do
   def start(_type, _args) do
     children = [
       {QuantumOfSolace.Consumers.Gtfs, []},
-      {QuantumOfSolace.Consumers.Stops, []},
+      # MODEL CONSUMERS START
+      {QuantumOfSolace.Consumers.Models.Zones, []},
+      {QuantumOfSolace.Consumers.Models.Stations, []},
+      {QuantumOfSolace.Consumers.Models.Platforms, []},
+      {QuantumOfSolace.Consumers.Models.Stops, []},
+      # MODEL CONSUMERS END
       {QuantumOfSolace.Repos.Control, []},
       {QuantumOfSolace.Repos.Blue, []},
       {QuantumOfSolace.Repos.Green, []},

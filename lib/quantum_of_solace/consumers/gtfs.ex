@@ -24,50 +24,76 @@ defmodule QuantumOfSolace.Consumers.Gtfs do
   end
 
   @impl GenServer
-  def handle_cast({:run}, _) do
-    # check the last modified date of the GTFS files agains the consumer runs table
-    # if the GTFS files have been updated since the last run, download the new files
-    # start a timeout clock that will halt the process if we don't complete in time
-    # tell the first consumer to process the new files
-    {:noreply, nil}
-  end
+  def handle_cast({:run, agency, url}, _) do
+    {:ok, last_modified_header} = get_last_modified_header(url)
+    last_modified_database = Control.get_last_modified(agency)
 
-  def handle_cast({:complete, _consumer}) do
-    # if this is the last consumer, we switch the active database
-    # if there are more consumers, we tell the next consumer to process the new files
-    {:noreply, nil}
-  end
+    if Timex.after?(last_modified_header, last_modified_database) do
+      case download_gtfs_files(agency, url) do
+        {:ok, directory} ->
+          List.first(@consumers) |> GenServer.cast({:run, agency, directory})
 
-  defp download_gtfs_files(source, url) do
-    source = Atom.to_string(source)
-    tmp_dir = System.tmp_dir!()
-    dir = Path.join(tmp_dir, source)
+          id = Control.start_consumer_run(agency)
 
-    File.rm_rf(dir)
-    File.mkdir(dir)
-    File.chmod(dir, 0o777)
+          Task.start(fn -> Process.sleep(30_000); GenServer.cast(__MODULE__, {:halt, id}) end)
 
-    path = dir |> Path.join(source <> ".zip")
+          {:noreply, {id, agency, directory}}
+        {:error, reason} ->
+          Logger.error("#{__MODULE__} failed to download GTFS files for #{agency}: #{reason}")
 
-    with {:ok, :saved_to_file} <-
-           :httpc.request(:get, {String.to_charlist(url), []}, [], stream: String.to_charlist(path)),
-         {:ok, _files} <- :zip.unzip(String.to_charlist(path), [{:cwd, String.to_charlist(dir)}]) do
-      dir
+          {:noreply, nil}
+      end
     else
-      {:error, reason} ->
-        Logger.error("#{__MODULE__} failed to download GTFS data from #{source} because #{reason}")
+      Logger.debug("#{__MODULE__} no new GTFS files for #{agency}")
 
-        nil
+      {:noreply, nil}
     end
   end
 
-  defp get_last_modified(urls) do
-    urls
-    |> Enum.map(&get_last_modified_header/1)
-    |> Enum.reject(fn {status, _} -> status == :error end)
-    |> Enum.sort_by(fn {_, datetime} -> datetime end, :desc)
-    |> List.first()
-    |> Kernel.elem(1)
+  def handle_cast({:complete, completed}, {id, agency, directory}) do
+    index = Enum.find_index(@consumers, fn consumer -> consumer == completed end)
+
+    if index == length(@consumers) - 1 do
+      Control.switch_active_repo()
+
+      Control.stop_consumer_run(id, true)
+
+      {:noreply, nil}
+    else
+      if Control.consumer_run_active?(id) do
+        Enum.at(@consumers, index + 1) |> GenServer.cast({:run, agency, directory})
+      end
+
+      {:noreply, {id, agency, directory}}
+    end
+  end
+
+  def handle_cast({:halt, id}, _) do
+    if Control.consumer_run_active?(id) do
+      Control.stop_consumer_run(id, false)
+    end
+
+    {:noreply, nil}
+  end
+
+  defp download_gtfs_files(agency, url) do
+    tmp_directory = System.tmp_dir!()
+    directory = Path.join(tmp_directory, agency)
+
+    File.rm_rf(directory)
+    File.mkdir(directory)
+    File.chmod(directory, 0o777)
+
+    path = directory |> Path.join(agency <> ".zip")
+
+    with {:ok, :saved_to_file} <-
+           :httpc.request(:get, {String.to_charlist(url), []}, [], stream: String.to_charlist(path)),
+         {:ok, _files} <- :zip.unzip(String.to_charlist(path), [{:cwd, String.to_charlist(directory)}]) do
+      {:ok, directory}
+    else
+      {:error, reason} ->
+        {:error, reason}
+    end
   end
 
   defp get_last_modified_header(url) do

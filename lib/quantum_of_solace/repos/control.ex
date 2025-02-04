@@ -6,6 +6,13 @@ defmodule QuantumOfSolace.Repos.Control do
     green: QuantumOfSolace.Repos.Green
   }
 
+  def consumer_run_active?(id) do
+    case query("SELECT COUNT(*) FROM consumer_runs WHERE id=#{id} AND success IS NULL") do
+      {:ok, %Postgrex.Result{num_rows: 1}} -> true
+      _ -> false
+    end
+  end
+
   def get_active_repo() do
     default_repo = Map.get(@repos, :blue)
 
@@ -27,8 +34,8 @@ defmodule QuantumOfSolace.Repos.Control do
     |> Enum.find(&(&1 != get_active_repo()))
   end
 
-  def last_modified() do
-    query("SELECT datetime FROM canaries ORDER BY datetime DESC LIMIT 1")
+  def get_last_modified(agency) do
+    query("SELECT datetime FROM consumer_runs WHERE agency='#{agency}' AND success=TRUE ORDER BY datetime DESC LIMIT 1")
     |> case do
       {:ok, %Postgrex.Result{num_rows: 0}} -> Timex.now() |> Timex.shift(years: -1)
       {:ok, %Postgrex.Result{} = result} -> result |> result_to_datetime()
@@ -49,23 +56,45 @@ defmodule QuantumOfSolace.Repos.Control do
     end
   end
 
+  def start_consumer_run(agency) do
+    case query(
+      "INSERT INTO consumer_runs (agency) VALUES ('#{agency}') RETURNING id"
+    ) do
+      {:ok, result} -> result_to_id(result)
+      _ -> :error
+    end
+  end
+
+  def stop_consumer_run(id, success) do
+    query(
+      "UPDATE consumer_runs SET success=#{success} WHERE id=#{id}"
+    )
+  end
+
   def switch_active_repo() do
     get_passive_repo() |> set_active_repo()
   end
 
   defp result_to_datetime(result) do
     result
-    |> Map.get(:rows)
-    |> List.first()
-    |> List.first()
+    |> result_to_value()
     |> Timex.to_datetime("America/New_York")
+  end
+
+  defp result_to_id(result) do
+    result_to_value(result)
   end
 
   defp result_to_repo(result) do
     result
+    |> result_to_value()
+    |> String.to_atom()
+  end
+
+  defp result_to_value(result) do
+    result
     |> Map.get(:rows)
     |> List.first()
     |> List.first()
-    |> String.to_atom()
   end
 end

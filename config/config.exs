@@ -25,6 +25,19 @@ config :quantum_of_solace,
     QuantumOfSolace.Repos.Green
   ]
 
-config :quantum_of_solace, QuantumOfSolace.Scheduler, jobs: [
-  {"* * * * *", {GenServer, :cast, [QuantumOfSolace.Consumers.Gtfs, {:run}]}},
-]
+gtfs_sources = %{
+  "massport" => "https://data.trilliumtransit.com/gtfs/massport-ma-us/massport-ma-us.zip",
+  "mbta" => "https://cdn.mbta.com/MBTA_GTFS.zip"
+}
+
+config :quantum_of_solace, :gtfs_sources, gtfs_sources
+
+gtfs_jobs =
+  Enum.map(
+    gtfs_sources,
+    fn {agency, url} ->
+      {"0 * * * *", {GenServer, :cast, [QuantumOfSolace.Consumers.Gtfs, {:run, agency, url}]}}
+    end
+  )
+
+config :quantum_of_solace, QuantumOfSolace.Scheduler, jobs: gtfs_jobs

@@ -6,7 +6,7 @@ defmodule QuantumOfSolace.Models.Stop do
   import Ecto.Changeset
 
   @primary_key false
-  @required_fields [:agency, :id, :latitude, :longitude, :name]
+  @required_fields [:agency, :id, :latitude, :longitude, :name, :wheelchair_boarding]
 
   typed_schema "stops" do
     field(:agency, :string, primary_key: true)
@@ -16,6 +16,8 @@ defmodule QuantumOfSolace.Models.Stop do
     field(:longitude, :float)
     field(:name, :string)
     field(:wheelchair_boarding, :boolean)
+
+    field(:updated_at, :utc_datetime)
   end
 
   def changeset(stop, attrs) do

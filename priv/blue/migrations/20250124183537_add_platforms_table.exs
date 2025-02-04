@@ -13,6 +13,8 @@ defmodule QuantumOfSolace.Repos.Migrations.AddPlatformsTable do
       add(:wheelchair_boarding, :boolean)
 
       add(:station_id, references(:stations, type: :string, with: [agency: :agency]))
+
+      add(:updated_at, :utc_datetime, default: fragment("NOW()"), null: false)
     end
   end
 

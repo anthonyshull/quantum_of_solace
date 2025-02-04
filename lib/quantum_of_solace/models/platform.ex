@@ -8,7 +8,7 @@ defmodule QuantumOfSolace.Models.Platform do
   alias QuantumOfSolace.Models.Station
 
   @primary_key false
-  @required_fields [:agency, :id, :latitude, :longitude, :name]
+  @required_fields [:agency, :id, :latitude, :longitude, :name, :wheelchair_boarding]
 
   typed_schema "platforms" do
     field(:agency, :string, primary_key: true)
@@ -17,8 +17,11 @@ defmodule QuantumOfSolace.Models.Platform do
     field(:latitude, :float)
     field(:longitude, :float)
     field(:name, :string)
+    field(:wheelchair_boarding, :boolean)
 
-    belongs_to(:station, Station, foreign_key: :parent_id, references: :id, type: :string)
+    field(:updated_at, :utc_datetime)
+
+    belongs_to(:station, Station, type: :string)
   end
 
   def changeset(stop, attrs) do

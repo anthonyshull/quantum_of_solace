@@ -8,7 +8,7 @@ defmodule QuantumOfSolace.Models.Station do
   alias QuantumOfSolace.Models.{Platform, Zone}
 
   @primary_key false
-  @required_fields [:agency, :id, :latitude, :longitude, :name]
+  @required_fields [:agency, :id, :latitude, :longitude, :name, :wheelchair_boarding]
 
   typed_schema "stations" do
     field(:agency, :string, primary_key: true)
@@ -19,13 +19,14 @@ defmodule QuantumOfSolace.Models.Station do
     field(:name, :string)
     field(:wheelchair_boarding, :boolean)
 
-    belongs_to(:zone, Zone, foreign_key: :zone_id, references: :id, type: :string)
+    field(:updated_at, :utc_datetime)
 
+    belongs_to(:zone, Zone, type: :string)
     has_many(:platforms, Platform, foreign_key: :station_id, references: :id)
   end
 
-  def changeset(stop, attrs) do
-    stop
+  def changeset(station, attrs) do
+    station
     |> cast(attrs, all_fields())
     |> validate_required(required_fields())
   end

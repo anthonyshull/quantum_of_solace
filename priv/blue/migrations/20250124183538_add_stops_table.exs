@@ -10,6 +10,8 @@ defmodule QuantumOfSolace.Repos.Migrations.AddStopsTable do
       add(:longitude, :float)
       add(:name, :string)
       add(:wheelchair_boarding, :boolean)
+
+      add(:updated_at, :utc_datetime, default: fragment("NOW()"), null: false)
     end
   end
 

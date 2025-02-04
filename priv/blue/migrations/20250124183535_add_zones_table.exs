@@ -1,15 +1,14 @@
 defmodule QuantumOfSolace.Repos.Migrations.AddZonesTable do
-  @moduledoc """
-  """
+  use Ecto.Migration
 
   alias QuantumOfSolace.Models.Station
-
-  use Ecto.Migration
 
   def up do
     create table("zones", primary_key: false) do
       add(:agency, :string, primary_key: true)
       add(:id, :string, primary_key: true)
+
+      add(:updated_at, :utc_datetime, default: fragment("NOW()"), null: false)
     end
   end
 
