@@ -7,7 +7,7 @@ defmodule QuantumOfSolace.Repos.Control do
   }
 
   def consumer_run_active?(id) do
-    case query("SELECT COUNT(*) FROM consumer_runs WHERE id=#{id} AND success IS NULL") do
+    case query("SELECT * FROM consumer_runs WHERE id=#{id} AND success IS NULL") do
       {:ok, %Postgrex.Result{num_rows: 1}} -> true
       _ -> false
     end
