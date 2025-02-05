@@ -35,9 +35,13 @@ defmodule QuantumOfSolace.Consumers.Gtfs do
 
           id = Control.start_consumer_run(agency)
 
-          Task.start(fn -> Process.sleep(30_000); GenServer.cast(__MODULE__, {:halt, id}) end)
+          Task.start(fn ->
+            Process.sleep(30_000)
+            GenServer.cast(__MODULE__, {:halt, id})
+          end)
 
           {:noreply, {id, agency, directory}}
+
         {:error, reason} ->
           Logger.error("#{__MODULE__} failed to download GTFS files for #{agency}: #{reason}")
 
@@ -87,8 +91,11 @@ defmodule QuantumOfSolace.Consumers.Gtfs do
     path = directory |> Path.join(agency <> ".zip")
 
     with {:ok, :saved_to_file} <-
-           :httpc.request(:get, {String.to_charlist(url), []}, [], stream: String.to_charlist(path)),
-         {:ok, _files} <- :zip.unzip(String.to_charlist(path), [{:cwd, String.to_charlist(directory)}]) do
+           :httpc.request(:get, {String.to_charlist(url), []}, [],
+             stream: String.to_charlist(path)
+           ),
+         {:ok, _files} <-
+           :zip.unzip(String.to_charlist(path), [{:cwd, String.to_charlist(directory)}]) do
       {:ok, directory}
     else
       {:error, reason} ->
