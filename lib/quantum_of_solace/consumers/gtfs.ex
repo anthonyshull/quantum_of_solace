@@ -5,7 +5,7 @@ defmodule QuantumOfSolace.Consumers.Gtfs do
 
   require Logger
 
-  alias QuantumOfSolace.Repos.Control
+  alias QuantumOfSolace.Repos.{Control, DynamicSupervisor}
 
   @consumers [
     QuantumOfSolace.Consumers.Models.Zones,
@@ -54,7 +54,7 @@ defmodule QuantumOfSolace.Consumers.Gtfs do
     index = Enum.find_index(@consumers, fn consumer -> consumer == completed end)
 
     if index == length(@consumers) - 1 do
-      Control.switch_active_repo()
+      DynamicSupervisor.switch()
 
       Control.stop_consumer_run(id, true)
 

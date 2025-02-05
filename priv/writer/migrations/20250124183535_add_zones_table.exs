@@ -1,8 +1,6 @@
 defmodule QuantumOfSolace.Repos.Migrations.AddZonesTable do
   use Ecto.Migration
 
-  alias QuantumOfSolace.Models.Station
-
   def up do
     create table("zones", primary_key: false) do
       add(:agency, :string, primary_key: true)

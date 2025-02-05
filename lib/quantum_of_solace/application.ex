@@ -6,21 +6,30 @@ defmodule QuantumOfSolace.Application do
   @impl true
   def start(_type, _args) do
     children = [
+      # MAIN CONSUMER
       {QuantumOfSolace.Consumers.Gtfs, []},
-      # MODEL CONSUMERS START
+      # MODEL CONSUMERS
       {QuantumOfSolace.Consumers.Models.Zones, []},
       {QuantumOfSolace.Consumers.Models.Stations, []},
       {QuantumOfSolace.Consumers.Models.Platforms, []},
       {QuantumOfSolace.Consumers.Models.Stops, []},
-      # MODEL CONSUMERS END
+      # BLUE/GREEN REPOS SUPERVSOR
+      {QuantumOfSolace.Repos.DynamicSupervisor, []},
+      # REPOS
       {QuantumOfSolace.Repos.Control, []},
-      {QuantumOfSolace.Repos.Blue, []},
-      {QuantumOfSolace.Repos.Green, []},
+      # QUANTUM SCHEDULER
       {QuantumOfSolace.Scheduler, []}
     ]
 
     opts = [strategy: :one_for_one, name: QuantumOfSolace.Supervisor]
 
-    Supervisor.start_link(children, opts)
+    main_app = Supervisor.start_link(children, opts)
+
+    DynamicSupervisor.start_child(
+      QuantumOfSolace.Repos.DynamicSupervisor,
+      QuantumOfSolace.Repos.DynamicSupervisor.passive()
+    )
+
+    main_app
   end
 end

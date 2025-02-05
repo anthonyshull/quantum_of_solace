@@ -1,25 +1,25 @@
+alias QuantumOfSolace.Consumers
+alias QuantumOfSolace.Models
+alias QuantumOfSolace.Repos
+
 defmodule Helpers do
   def gtfs(agency, url) do
-    GenServer.cast(QuantumOfSolace.Consumers.Gtfs, {:run, agency, url})
+    GenServer.cast(Consumers.Gtfs, {:run, agency, url})
   end
 
   def massport() do
     agency = "massport"
-    url = Application.get_env(:quantum_of_solace, :gtfs_sources)[agency]
+    url = "https://data.trilliumtransit.com/gtfs/massport-ma-us/massport-ma-us.zip"
 
     gtfs(agency, url)
   end
 
   def mbta() do
     agency = "mbta"
-    url = Application.get_env(:quantum_of_solace, :gtfs_sources)[agency]
+    url = "https://cdn.mbta.com/MBTA_GTFS.zip"
 
     gtfs(agency, url)
   end
 end
 
 import Helpers
-
-alias QuantumOfSolace.Models.Stop
-alias QuantumOfSolace.Repo
-alias QuantumOfSolace.Repos.Control

@@ -17,7 +17,7 @@ defmodule QuantumOfSolace.Consumers.Models.Platforms do
       longitude: Map.get(row, "stop_lon") |> String.to_float(),
       name: Map.get(row, "stop_name"),
       station_id: Map.get(row, "parent_station"),
-      wheelchair_boarding: Map.get(row, "wheelchair_boarding") == "1",
+      wheelchair_boarding: Map.get(row, "wheelchair_boarding") == "1"
     }
   end
 end

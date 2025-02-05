@@ -16,7 +16,7 @@ defmodule QuantumOfSolace.Consumers.Models.Stops do
       latitude: Map.get(row, "stop_lat") |> String.to_float(),
       longitude: Map.get(row, "stop_lon") |> String.to_float(),
       name: Map.get(row, "stop_name"),
-      wheelchair_boarding: Map.get(row, "wheelchair_boarding") == "1",
+      wheelchair_boarding: Map.get(row, "wheelchair_boarding") == "1"
     }
   end
 end

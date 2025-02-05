@@ -2,7 +2,7 @@ defmodule QuantumOfSolace.Consumers.Model do
   @moduledoc """
   """
 
-  @callback file() :: String.t
+  @callback file() :: String.t()
   @callback reject_map(map :: map) :: boolean
   @callback reject_row(row :: map) :: boolean
   @callback row_to_map(row :: map) :: map
@@ -15,18 +15,18 @@ defmodule QuantumOfSolace.Consumers.Model do
       def reject_row(row), do: false
       def row_to_map(row), do: row
 
-      defoverridable [reject_map: 1, reject_row: 1, row_to_map: 1]
+      defoverridable reject_map: 1, reject_row: 1, row_to_map: 1
 
       use GenServer
 
       require Logger
 
-      alias QuantumOfSolace.Repo
+      alias QuantumOfSolace.Repos.Writer
 
       @consumer __MODULE__
-               |> Atom.to_string()
-               |> String.split(".")
-               |> List.last()
+                |> Atom.to_string()
+                |> String.split(".")
+                |> List.last()
 
       @model __MODULE__
              |> Atom.to_string()
@@ -52,7 +52,11 @@ defmodule QuantumOfSolace.Consumers.Model do
 
         Logger.info("#{@consumer} processing data from #{agency} at #{path}")
 
+        Writer.start_link()
+
         ingest(agency, path)
+
+        Writer.stop(1_000)
 
         GenServer.cast(QuantumOfSolace.Consumers.Gtfs, {:complete, __MODULE__})
 
@@ -73,7 +77,10 @@ defmodule QuantumOfSolace.Consumers.Model do
         |> Enum.to_list()
         |> Enum.uniq()
         |> Kernel.then(
-          &Repo.passive().insert_all(@model, &1, on_conflict: :replace_all, conflict_target: [:agency, :id])
+          &Writer.insert_all(@model, &1,
+            on_conflict: :replace_all,
+            conflict_target: [:agency, :id]
+          )
         )
       end
     end
