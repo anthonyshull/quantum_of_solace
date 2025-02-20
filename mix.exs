@@ -27,6 +27,7 @@ defmodule QuantumOfSolace.MixProject do
       {:gen_stage, "1.2.1"},
       {:inflex, "2.1.0"},
       {:postgrex, "0.19.3"},
+      {:protobuf, "0.14.1"},
       {:quantum, "3.5.3"},
       {:recase, "0.8.1"},
       {:timex, "3.7.11"},

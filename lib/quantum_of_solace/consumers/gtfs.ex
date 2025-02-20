@@ -104,7 +104,7 @@ defmodule QuantumOfSolace.Consumers.Gtfs do
     end
   end
 
-  defp get_last_modified_header(url) do
+  def get_last_modified_header(url) do
     case :httpc.request(:head, {String.to_charlist(url), []}, [], []) do
       {:ok, {{_, 200, _}, headers, _}} ->
         headers

@@ -23,3 +23,16 @@ defmodule Helpers do
 end
 
 import Helpers
+
+alerts_url = "https://cdn.mbta.com/realtime/Alerts.pb" |> String.to_charlist()
+alerts_path = "priv/data/alerts.pb" |> String.to_charlist()
+
+{:ok, :saved_to_file} = :httpc.request(:get, {alerts_url, []}, [], stream: alerts_path)
+
+{:ok, binary} = File.read(alerts_path)
+
+alerts =
+  binary
+  |> TransitRealtime.FeedMessage.decode()
+  |> Map.get(:entity)
+  |> Enum.map(&Map.get(&1, :alert))
