@@ -1,21 +1,6 @@
 # QuantumOfSolace
 
-**TODO: Add description**
-
-## Installation
-
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `quantum_of_solace` to your list of dependencies in `mix.exs`:
-
-```elixir
-def deps do
-  [
-    {:quantum_of_solace, "~> 0.1.0"}
-  ]
-end
 ```
-
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at <https://hexdocs.pm/quantum_of_solace>.
+%> docker run -e POSTGRES_DB=postgres -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres --name postgres -p 5432:5432 -d postgres
+```
 
