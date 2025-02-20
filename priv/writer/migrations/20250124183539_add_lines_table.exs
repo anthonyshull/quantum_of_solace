@@ -8,8 +8,10 @@ defmodule QuantumOfSolace.Repos.Migrations.AddLinesTable do
 
       add(:color, :string)
       add(:mode, :mode)
-      add(:name, :string)
+      add(:long_name, :string)
       add(:shape, {:array, {:array, :float}})
+      add(:short_name, :string)
+      add(:sort_order, :integer)
 
       add(:updated_at, :utc_datetime, default: fragment("NOW()"), null: false)
     end

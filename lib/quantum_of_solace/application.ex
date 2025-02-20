@@ -13,6 +13,7 @@ defmodule QuantumOfSolace.Application do
       {QuantumOfSolace.Consumers.Models.Stations, []},
       {QuantumOfSolace.Consumers.Models.Platforms, []},
       {QuantumOfSolace.Consumers.Models.Stops, []},
+      {QuantumOfSolace.Consumers.Models.Lines, []},
       # BLUE/GREEN REPOS SUPERVSOR
       {QuantumOfSolace.Repos.DynamicSupervisor, []},
       # REPOS

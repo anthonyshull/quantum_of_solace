@@ -28,6 +28,7 @@ defmodule QuantumOfSolace.MixProject do
       {:inflex, "2.1.0"},
       {:postgrex, "0.19.3"},
       {:quantum, "3.5.3"},
+      {:recase, "0.8.1"},
       {:timex, "3.7.11"},
       {:typed_ecto_schema, "0.4.1"}
     ]
