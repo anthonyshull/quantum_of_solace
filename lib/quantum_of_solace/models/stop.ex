@@ -5,6 +5,8 @@ defmodule QuantumOfSolace.Models.Stop do
 
   import Ecto.Changeset
 
+  alias QuantumOfSolace.Models
+
   @primary_key false
   @required_fields [:agency, :id, :latitude, :longitude, :name, :wheelchair_boarding]
 
@@ -16,6 +18,8 @@ defmodule QuantumOfSolace.Models.Stop do
     field(:longitude, :float)
     field(:name, :string)
     field(:wheelchair_boarding, :boolean)
+
+    many_to_many :alerts, Models.Alert, join_through: Models.Alerts.Stop
 
     field(:updated_at, :utc_datetime)
   end

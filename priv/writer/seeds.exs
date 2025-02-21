@@ -1,3 +1,5 @@
+alias QuantumOfSolace.Models.Alert
+
 Application.get_env(:quantum_of_solace, QuantumOfSolace.Repos.Writer)
 |> QuantumOfSolace.Repos.Writer.start_link()
 

@@ -18,7 +18,7 @@ defmodule QuantumOfSolace.Consumers.Models.Lines do
       long_name: Map.get(row, "line_long_name"),
       mode: Map.get(row, "line_color") |> color_to_mode(),
       short_name: Map.get(row, "line_short_name"),
-      sort_order: Map.get(row, "line_sort_order") |> String.to_integer(),
+      sort_order: Map.get(row, "line_sort_order") |> String.to_integer()
     }
   end
 

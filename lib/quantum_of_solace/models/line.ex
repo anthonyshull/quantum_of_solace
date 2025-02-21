@@ -5,26 +5,23 @@ defmodule QuantumOfSolace.Models.Line do
 
   import Ecto.Changeset
 
+  alias QuantumOfSolace.Models
+
   @primary_key false
   @required_fields [:agency, :id, :color, :long_name]
-
-  # add(:color, :string)
-  # add(:mode, :mode)
-  # add(:long_name, :string)
-  # add(:shape, {:array, {:array, :float}})
-  # add(:short_name, :string)
-  # add(:sort_order, :integer)
 
   typed_schema "lines" do
     field(:agency, :string, primary_key: true)
     field(:id, :string, primary_key: true)
 
     field(:color, :string)
-    field(:mode, Ecto.Enum, values: [:bus, :ferry, :rail, :subway])
+    field(:mode, Ecto.Enum, values: QuantumOfSolace.Models.Mode.modes())
     field(:long_name, :string)
     field(:shape, {:array, {:array, :float}})
     field(:short_name, :string)
     field(:sort_order, :integer)
+
+    many_to_many :alerts, Models.Alert, join_through: Models.Alerts.Line
 
     field(:updated_at, :utc_datetime)
   end

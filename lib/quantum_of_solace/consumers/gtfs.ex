@@ -12,7 +12,7 @@ defmodule QuantumOfSolace.Consumers.Gtfs do
     QuantumOfSolace.Consumers.Models.Stations,
     QuantumOfSolace.Consumers.Models.Platforms,
     QuantumOfSolace.Consumers.Models.Stops,
-    QuantumOfSolace.Consumers.Models.Lines,
+    QuantumOfSolace.Consumers.Models.Lines
   ]
 
   def start_link(_) do

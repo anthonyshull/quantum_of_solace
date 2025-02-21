@@ -26,6 +26,7 @@ defmodule QuantumOfSolace.MixProject do
       {:ecto_sql, "3.12.1"},
       {:gen_stage, "1.2.1"},
       {:inflex, "2.1.0"},
+      {:pg_ranges, git: "https://github.com/vforgione/pg_ranges.git"},
       {:postgrex, "0.19.3"},
       {:protobuf, "0.14.1"},
       {:quantum, "3.5.3"},

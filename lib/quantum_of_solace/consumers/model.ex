@@ -35,7 +35,7 @@ defmodule QuantumOfSolace.Consumers.Model do
              |> Enum.drop(-1)
              |> Enum.concat([Inflex.singularize(@consumer)])
              |> Enum.join(".")
-             |> String.to_existing_atom()
+             |> String.to_atom()
 
       def start_link(_) do
         GenServer.start_link(__MODULE__, nil, name: __MODULE__)
